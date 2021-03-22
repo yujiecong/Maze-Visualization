@@ -78,9 +78,10 @@ void MainWindow::printPath(QString path,QColor color)
             x--;
 
         }
-                setWidgetBg(y,x,color);
-        delay(delayMs);
+        setWidgetBg(y,x,color);
+
     }
+       delay(delayMs);
 }
 
 void MainWindow::setWidgetBg(int y, int x,QColor c)
@@ -99,7 +100,7 @@ void MainWindow::delay(uint ms)
 
 }
 
-void MainWindow::initBg(QString path)
+void MainWindow::erasePath(QString path)
 {
     int x=0,y=0;
     for(int i=0;i<path.size();i++){
@@ -134,6 +135,140 @@ void MainWindow::initBg(QString path)
     setWidgetBg(0,0,QColor(255,0,0));
     setWidgetBg(mapHeight-1,mapWidth-1,QColor(222,111,0));
 
+}
+
+void MainWindow::iniBg()
+{
+    for(int i=0;i<ui->verticalLayout->count();i++) {
+
+        for(int j=0;j<ui->verticalLayout->itemAt(i)->widget()->layout()->count();j++){
+            Widget *w=qobject_cast<Widget*>(ui->verticalLayout->itemAt(i)->widget()->layout()->itemAt(j)->widget());
+            if(map.at(i).at(j)=="0"){
+                w->setBg(QColor(255,255,255));
+                w->setB(0);
+            }
+            else{
+                w->setBg(QColor(0,0,0));
+                w->setB(1);
+            }
+        }
+    }
+}
+
+void MainWindow::bfs()
+{
+    flag=1;
+    queen.clear();
+    visited.clear();
+    Pos pos(0,0,"");
+    queen.append(&pos);
+    while(queen.size()!=0 && flag){
+
+        //        目前走的是这一条
+        Pos *move_node=queen[0];
+        printPath(move_node->getPath(),QColor(255,228,181));
+
+        qDebug()<<move_node->getY()<<move_node->getX()<<move_node->getPath();
+        //       当前路径
+        queen.removeAt(0);
+        QPair<int,int> move_str(move_node->getY(),move_node->getX());
+
+        if (!visited.contains(move_str)){
+            visited.append(move_str);
+            //             qDebug()<<move_node->getY()<<move_node->getX();
+            if (move_node->getY() == mapHeight-1 and move_node->getX() == mapWidth -1){
+                qDebug()<<move_node->getPath();
+                printPath(move_node->getPath(),QColor(0,255,0));
+                break;
+            }
+            if (move_node->getY()<mapHeight-1 && map.at(move_node->getY()+1).at(move_node->getX())=="0"){
+                queen.append(down(move_node));
+                setWidgetBg(move_node->getY()+1,move_node->getX(),QColor(122,51,244));
+            }
+            if (move_node->getX()>0 && map.at(move_node->getY()).at(move_node->getX()-1)=="0"){
+                queen.append(left(move_node));
+                setWidgetBg(move_node->getY(),move_node->getX()-1,QColor(122,51,244));
+            }
+            if (move_node->getX()< mapWidth-1 && map.at(move_node->getY()).at(move_node->getX()+1)=="0"){
+                queen.append(right(move_node));
+                setWidgetBg(move_node->getY(),move_node->getX()+1,QColor(122,51,244));
+            }
+            if (move_node->getY()>0 && map.at(move_node->getY()-1).at(move_node->getX())=="0"){
+                queen.append(up(move_node));
+                setWidgetBg(move_node->getY()-1,move_node->getX(),QColor(122,51,244));
+            }
+
+
+        }
+        else{
+            //已经走过的路径用红色标记
+            //            printPath(move_node->getPath(),QColor(255,0,0));
+
+        }
+        delay(delayMs);
+
+        erasePath(move_node->getPath());
+    }
+}
+
+void MainWindow::dfs(int y,int x,Pos *move_node)
+{
+
+    qDebug()<<y<<x<<move_node->getPath();
+    if(y == mapHeight-1 and x == mapWidth -1){
+        printPath(move_node->getPath(),QColor(0,255,0));
+        qDebug()<< "exit";
+        flag=1;
+        return ;
+    }
+    else{
+
+        QPair<int,int> move_str(y,x);
+        if (!visited.contains(move_str))
+        {
+            printPath(move_node->getPath(),QColor(255,228,181));
+            visited.append(move_str);
+
+            if (y<mapHeight-1 && map.at(y+1).at(x)=="0"){
+                dfs(y+1,x,down(move_node));
+
+                if(flag){
+                    return ;
+                }
+                erasePath(move_node->getPath());
+            }
+            if (x>0 && map.at(y).at(x-1)=="0"){
+                dfs(y,x-1, left(move_node));
+
+                if(flag){
+                    return ;
+                }
+                erasePath(move_node->getPath());
+
+            }
+            if (x< mapWidth-1 && map.at(y).at(x+1)=="0"){
+
+                dfs(y,x+1,right(move_node));
+
+                if(flag){
+                    return ;
+                }
+                erasePath(move_node->getPath());
+            }
+            if (y>0 && map.at(y-1).at(x)=="0"){
+
+                dfs(y-1,x,up(move_node));
+
+                if(flag){
+                    return ;
+                }
+                erasePath(move_node->getPath());
+            }
+
+
+        }
+
+    }
 }
 
 bool MainWindow::getWidgetBool(int y, int x)
@@ -190,59 +325,16 @@ Pos *left(Pos *p)
 
 void MainWindow::on_pushButton_clicked()
 {
-    flag=1;
-    queen.clear();
+    iniBg();
+    bfs();
+
+
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    flag=0;
     visited.clear();
     Pos pos(0,0,"");
-    queen.append(&pos);
-    while(queen.size()!=0 && flag){
-
-        //        目前走的是这一条
-        Pos *move_node=queen[0];
-        printPath(move_node->getPath(),QColor(255,228,181));
-
-        qDebug()<<move_node->getY()<<move_node->getX()<<move_node->getPath();
-        //       当前路径
-        queen.removeAt(0);
-        QPair<int,int> move_str(move_node->getY(),move_node->getX());
-
-        if (!visited.contains(move_str)){
-            visited.append(move_str);
-//             qDebug()<<move_node->getY()<<move_node->getX();
-            if (move_node->getY() == mapHeight-1 and move_node->getX() == mapWidth -1){
-                qDebug()<<move_node->getPath();
-                printPath(move_node->getPath(),QColor(0,255,0));
-                break;
-            }
-            if (move_node->getY()<mapHeight-1 && map.at(move_node->getY()+1).at(move_node->getX())=="0"){
-                queen.append(down(move_node));
-                setWidgetBg(move_node->getY()+1,move_node->getX(),QColor(122,51,244));
-            }
-            if (move_node->getX()>0 && map.at(move_node->getY()).at(move_node->getX()-1)=="0"){
-                queen.append(left(move_node));
-                 setWidgetBg(move_node->getY(),move_node->getX()-1,QColor(122,51,244));
-            }
-            if (move_node->getX()< mapWidth-1 && map.at(move_node->getY()).at(move_node->getX()+1)=="0"){
-                queen.append(right(move_node));
-                setWidgetBg(move_node->getY(),move_node->getX()+1,QColor(122,51,244));
-            }
-            if (move_node->getY()>0 && map.at(move_node->getY()-1).at(move_node->getX())=="0"){
-                queen.append(up(move_node));
-                 setWidgetBg(move_node->getY()-1,move_node->getX(),QColor(122,51,244));
-            }
-
-
-        }
-        else{
-            //已经走过的路径用红色标记
-//            printPath(move_node->getPath(),QColor(255,0,0));
-
-        }
-//        printPath(move_node->getPath(),QColor(255,228,181));
-        delay(delayMs);
-//        qDebug()<<move_node->getPath();
-        initBg(move_node->getPath());
-    }
-
-
+    dfs(0,0,&pos);
 }

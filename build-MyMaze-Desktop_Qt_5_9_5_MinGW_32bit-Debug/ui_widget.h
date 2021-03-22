@@ -30,9 +30,9 @@ public:
     {
         if (Widget->objectName().isEmpty())
             Widget->setObjectName(QStringLiteral("Widget"));
-        Widget->resize(100, 100);
-        Widget->setMinimumSize(QSize(100, 100));
-        Widget->setMaximumSize(QSize(100, 100));
+        Widget->resize(30, 30);
+        Widget->setMinimumSize(QSize(30, 30));
+        Widget->setMaximumSize(QSize(30, 30));
         horizontalLayout = new QHBoxLayout(Widget);
         horizontalLayout->setSpacing(0);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));

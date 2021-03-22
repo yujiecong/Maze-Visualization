@@ -32,6 +32,8 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
 //    const int MazeWidth=5;
@@ -39,7 +41,7 @@ private:
     QVector<Pos*> queen;
     QVector<QString> map;
     QVector<QPair<int,int>>visited;
-    QVector<QWidget*    > wv;
+
     int mapWidth;
     int mapHeight;
     bool flag=0;
@@ -47,7 +49,10 @@ private:
     inline void setWidgetBg(int y, int x, QColor c);
     void printWrongPath(QString path);
     void delay(uint ms);
-    void initBg(QString path);
+    void erasePath(QString path);
+    void iniBg();
+    void bfs();
+    void dfs(int y, int x, Pos *move_node);
     inline bool getWidgetBool(int y,int x);
 
     int delayMs=50;
