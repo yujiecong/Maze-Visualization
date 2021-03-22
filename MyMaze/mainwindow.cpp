@@ -333,6 +333,7 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_pushButton_2_clicked()
 {
+        iniBg();
     flag=0;
     visited.clear();
     Pos pos(0,0,"");
