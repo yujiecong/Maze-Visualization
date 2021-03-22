@@ -14,13 +14,20 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="5">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,0">
     <item>
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
        <string>迷宫啊</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout"/>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>GO</string>
+      </property>
      </widget>
     </item>
    </layout>

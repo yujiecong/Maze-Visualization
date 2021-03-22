@@ -29,6 +29,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 //    const int MazeWidth=5;
@@ -39,8 +42,12 @@ private:
     QVector<QWidget*    > wv;
     int mapWidth;
     int mapHeight;
-    void printPath(QString path);
+    bool flag=0;
+    void printPath(QString path, QColor color);
     void setWidgetBg(int y, int x, QColor c);
+    void printWrongPath(QString path);
+    void delay(uint ms);
+    void initBg(QString path);
 };
 
 

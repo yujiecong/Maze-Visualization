@@ -22,3 +22,13 @@ void Widget::setBg(QColor c)
     ui->label->setStyleSheet(tr("background-color:rgb(%1,%2,%3);").arg(c.red()).arg(c.green()).arg(c.blue()));
 }
 
+void Widget::setB(bool value)
+{
+    b = value;
+}
+
+bool Widget::getB() const
+{
+    return b;
+}
+
