@@ -13,7 +13,7 @@ public:
     int getY() const;
 
     QString getPath() const;
-    Pos(int x,int y,QString path);
+    Pos(int y,int x,QString path);
 private:
 
     int x;
@@ -44,10 +44,15 @@ private:
     int mapHeight;
     bool flag=0;
     void printPath(QString path, QColor color);
-    void setWidgetBg(int y, int x, QColor c);
+    inline void setWidgetBg(int y, int x, QColor c);
     void printWrongPath(QString path);
     void delay(uint ms);
     void initBg(QString path);
+    inline bool getWidgetBool(int y,int x);
+
+    int delayMs=50;
+protected:
+    void closeEvent(QCloseEvent *ev);
 };
 
 

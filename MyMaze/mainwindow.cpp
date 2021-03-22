@@ -45,10 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mapWidth=map.at(0).size();
     mapHeight=map.size();
     setWidgetBg(mapHeight-1,mapWidth-1,QColor(222,111,0));
-
     maze.close();
-
-
 
 }
 
@@ -65,7 +62,7 @@ void MainWindow::printPath(QString path,QColor color)
     for(int i=0;i<path.size();i++){
         QString t=path.at(i);
         //        qDebug()<<x<<y<<t;
-        setWidgetBg(y,x,color);
+
         if(t=="D"){
             y++;
         }
@@ -81,14 +78,14 @@ void MainWindow::printPath(QString path,QColor color)
             x--;
 
         }
-        delay(100);
+                setWidgetBg(y,x,color);
+        delay(delayMs);
     }
 }
 
 void MainWindow::setWidgetBg(int y, int x,QColor c)
 {
     qobject_cast<Widget*>(ui->verticalLayout->layout()->itemAt(y)->widget()->layout()->itemAt(x)->widget())->setBg(c);
-
 }
 
 
@@ -107,12 +104,7 @@ void MainWindow::initBg(QString path)
     int x=0,y=0;
     for(int i=0;i<path.size();i++){
         QString t=path.at(i);
-        if(qobject_cast<Widget*>(ui->verticalLayout->itemAt(y)->widget()->layout()->itemAt(x)->widget())->getB()){
-            setWidgetBg(y,x,QColor(0,0,0));
-        }
-        else{
-            setWidgetBg(y,x,QColor(255,255,255));
-        }
+
 
         if(t=="D"){
             y++;
@@ -129,6 +121,12 @@ void MainWindow::initBg(QString path)
             x--;
 
         }
+        if(getWidgetBool(y,x)){
+            setWidgetBg(y,x,QColor(0,0,0));
+        }
+        else{
+            setWidgetBg(y,x,QColor(255,255,255));
+        }
 
     }
 
@@ -138,7 +136,18 @@ void MainWindow::initBg(QString path)
 
 }
 
-Pos::Pos(int x, int y, QString path):x(x),y(y),path(path)
+bool MainWindow::getWidgetBool(int y, int x)
+{
+    return qobject_cast<Widget*>(ui->verticalLayout->itemAt(y)->widget()->layout()->itemAt(x)->widget())->getB();
+}
+
+void MainWindow::closeEvent(QCloseEvent *ev)
+{
+    flag=0;
+    QMainWindow::closeEvent(ev);
+}
+
+Pos::Pos(int y, int x, QString path):x(x),y(y),path(path)
 {
 
 }
@@ -182,15 +191,17 @@ Pos *left(Pos *p)
 void MainWindow::on_pushButton_clicked()
 {
     flag=1;
-//    queen.clear();
-//    visited.clear();
+    queen.clear();
+    visited.clear();
     Pos pos(0,0,"");
     queen.append(&pos);
     while(queen.size()!=0 && flag){
 
         //        目前走的是这一条
         Pos *move_node=queen[0];
-        qDebug()<<move_node->getY()<<move_node->getX();
+        printPath(move_node->getPath(),QColor(255,228,181));
+
+        qDebug()<<move_node->getY()<<move_node->getX()<<move_node->getPath();
         //       当前路径
         queen.removeAt(0);
         QPair<int,int> move_str(move_node->getY(),move_node->getX());
@@ -220,12 +231,16 @@ void MainWindow::on_pushButton_clicked()
                  setWidgetBg(move_node->getY()-1,move_node->getX(),QColor(122,51,244));
             }
 
-            printPath(move_node->getPath(),QColor(255,228,181));
+
         }
         else{
-            printPath(move_node->getPath(),QColor(255,0,0));
+            //已经走过的路径用红色标记
+//            printPath(move_node->getPath(),QColor(255,0,0));
+
         }
-        qDebug()<<move_node->getPath();
+//        printPath(move_node->getPath(),QColor(255,228,181));
+        delay(delayMs);
+//        qDebug()<<move_node->getPath();
         initBg(move_node->getPath());
     }
 
